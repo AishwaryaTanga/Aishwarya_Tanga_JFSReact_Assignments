@@ -1,0 +1,42 @@
+package com.springrest.auth;
+
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+public class AuthController {
+
+
+	@RequestMapping("/authenticate/{username}/{password}")
+	public String getMessage(@PathVariable("username") String username, @PathVariable("password") String password) {
+		String existingUser = "piyu@mail.com";
+		String piyuPass = "Pass@123";
+		
+		if(username.equals(existingUser) && password.equals(piyuPass)) {
+			return "Valid User";
+		} else {
+			return "Invalid User";
+		}
+	}
+}
+
+
+
+
+package com.springrest.auth;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AuthenticationUserApplication {
+	
+
+		public static void main(String[] args) {
+			SpringApplication.run(AuthenticationUserApplication.class, args);
+			System.out.println("App Started..");
+		}
+
+	}
+

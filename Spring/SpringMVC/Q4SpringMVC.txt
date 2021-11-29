@@ -1,0 +1,314 @@
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class LoginValidationController {
+	
+	@RequestMapping("/")
+	public String landingPage() {
+	
+		return "Login.jsp";
+	
+	}
+	
+	
+	@RequestMapping("/authenticateUser")
+	public ModelAndView validateUser(@ModelAttribute("user") User userObj) {
+		
+		ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("com/SpringMVCQ_4
+
+}/bean.xml");
+		UserDao userdao = (UserDao) context.getBean("udao");
+		
+		// get user from database
+		User resultUser = userdao.getUserByUsername(userObj);
+		
+		String uname = userObj.getUsername();
+		String pass = userObj.getPassword();
+		
+		ModelAndView mv = new ModelAndView();
+		
+		if(uname.equals(resultUser.getUsername()) && pass.equals(resultUser.getPassword())) {
+			 mv.setViewName("Success.jsp");
+		} else {
+			mv.setViewName("Error.jsp");
+		}
+		
+		context.close();
+		return mv;
+		
+	}
+}
+
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class RegisterUserController {
+
+	@RequestMapping("/registration")
+	public String registrationPage() {
+	
+		return "Register.jsp";
+	
+	}
+	
+	@RequestMapping("/registerUser")
+	public ModelAndView registerUser(@ModelAttribute("user") User userObj) {
+		
+		ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("com/priyanka/bean.xml");
+		UserDao userdao = (UserDao) context.getBean("udao");
+		ModelAndView mv = new ModelAndView();
+		try {
+				
+			int result = userdao.saveUser(userObj);
+			
+						
+			if(result > 0) {
+				mv.setViewName("Login.jsp");
+				mv.addObject("message", "Registration Successful");
+			} else {
+				mv.setViewName("Register.jsp");
+				mv.addObject("message", "Registration Failed");
+			}
+		} catch (Exception e) {
+			mv.setViewName("Register.jsp");
+			mv.addObject("message", "User already exist.");
+		}
+		return mv;
+		
+	}
+	
+}
+
+public class User {
+	private int id;
+	private String username;
+	private String password;
+	private String email;
+	
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", username=" + username + ", password=" + password + ", email=" + email + "]";
+	}
+	
+	public User() {}
+	
+	public User(int id, String username, String password, String email) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.email = email;
+	}
+
+	public int getId() {
+		return id;
+	}
+	
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setId(int id) {
+		this.id = id;
+	}
+	
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+	}
+
+
+import java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+public class UserDao {
+
+	private JdbcTemplate jdbcTemplate;  
+	  
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {  
+	    this.jdbcTemplate = jdbcTemplate;  
+	}  
+	
+	public int saveUser(User u){  
+	    String query="insert into user(email, username, password) values('"+ u.getEmail() +"', '"+ u.getUsername() +"', '" + u.getPassword() + "')"; 
+	    return jdbcTemplate.update(query);  
+	}  
+	
+	public User getUserByUsername(User u) {
+	    String sql = "SELECT * FROM user WHERE username='" + u.getUsername() + "'";
+
+	    return jdbcTemplate.query(sql, new ResultSetExtractor<User>() {
+	
+	        @Override
+	        public User extractData(ResultSet rs) throws SQLException, DataAccessException {
+	            if (rs.next()) {
+	                User resultUser = new User();
+	                resultUser.setId(rs.getInt("id"));
+	                resultUser.setEmail(rs.getString("email"));
+	                resultUser.setUsername(rs.getString("username"));
+	                resultUser.setPassword(rs.getString("password"));
+	                return resultUser;
+	            }
+	 
+	            return null;
+	        }
+	 
+	    });
+	}
+}
+
+mport java.sql.ResultSet;
+import java.sql.SQLException;
+
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.ResultSetExtractor;
+
+public class UserDao {
+
+	private JdbcTemplate jdbcTemplate;  
+	  
+	public void setJdbcTemplate(JdbcTemplate jdbcTemplate) {  
+	    this.jdbcTemplate = jdbcTemplate;  
+	}  
+	
+	public int saveUser(User u){  
+	    String query="insert into user(email, username, password) values('"+ u.getEmail() +"', '"+ u.getUsername() +"', '" + u.getPassword() + "')"; 
+	    return jdbcTemplate.update(query);  
+	}  
+	
+	public User getUserByUsername(User u) {
+	    String sql = "SELECT * FROM user WHERE username='" + u.getUsername() + "'";
+
+	    return jdbcTemplate.query(sql, new ResultSetExtractor<User>() {
+	
+	        @Override
+	        public User extractData(ResultSet rs) throws SQLException, DataAccessException {
+	            if (rs.next()) {
+	                User resultUser = new User();
+	                resultUser.setId(rs.getInt("id"));
+	                resultUser.setEmail(rs.getString("email"));
+	                resultUser.setUsername(rs.getString("username"));
+	                resultUser.setPassword(rs.getString("password"));
+	                return resultUser;
+	            }
+	 
+	            return null;
+	        }
+	 
+	    });
+	}
+}
+
+
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1" pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Login</title>
+</head>
+<body style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+	<%if(request.getAttribute("message")!=null){ %>
+		<h3 style="color: green"><%= request.getAttribute("message") %></h3>
+	<% } %>
+	<h1 style="text-align: center; width: 100%;">Login Form</h1>
+	<form action="authenticateUser" method="post" modelAttribute="user" style="border: 2px solid gray; padding:40px; align-content: center;">
+	
+		
+		<label for="usernameId">Username : </label>
+		<input id="usernameId" name="username" type="text"/>
+		<br/><br/>
+		<label for="passwordId">Password : </label>
+		<input id="passwordId" name="password" type="password"/>
+		<br/><br/>
+		
+		<button type="submit" style="cursor:pointer; width: 220px; height: 30px; text-decoration: black; background-color: white; border-radius: 15px; border: 2px solid blue">
+			Login
+		</button>
+		<br/> <br/>
+		Don't have account? <a href="/Q4_LoginAuthentication_JDBC/registration">Register</a>
+		
+	</form>
+</body>
+</html>
+
+
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Registration</title>
+</head>
+<body style="display: flex; justify-content: center; align-items: center; flex-direction: column;">
+	<%if(request.getAttribute("message")!=null){ %>
+		<h3 style="color: red"><%= request.getAttribute("message") %></h3>
+	<% } %>
+	<h1 style="text-align: center; width: 100%;">Registration Form</h1>
+	<form action="registerUser" method="post" modelAttribute="user" style="border: 2px solid gray; padding:40px; align-content: center;">
+		<label for="emailId">Email : </label>
+		<input id="emailId" name="email" type="email"/>
+		<br/><br/>		
+		<label for="usernameId">Username : </label>
+		<input id="usernameId" name="username" type="text"/>
+		<br/><br/>
+		<label for="passwordId">Password : </label>
+		<input id="passwordId" name="password" type="password"/>
+		<br/><br/>
+		
+		<button type="submit" style="cursor:pointer; width: 220px; height: 30px; text-decoration: black; background-color: white; border-radius: 15px; border: 2px solid blue">
+			Register
+		</button>
+		<br/> <br/>
+		Already have account? <a href="/Q4_LoginAuthentication_JDBC">Login</a>
+		
+	</form>
+</body>
+</html>
+
+
+<html>
+<body>
+	<h1 style="color: green">Login Successful..</h1>
+</body>
+</html>

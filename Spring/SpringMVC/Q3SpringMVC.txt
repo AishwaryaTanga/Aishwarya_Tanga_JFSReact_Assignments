@@ -1,0 +1,223 @@
+package com.SpringMVCQ4;
+
+import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+@Controller
+public class LoginValidationController {
+	
+	@RequestMapping("/")
+	public String landingPage() {
+	
+		return "Login.jsp";
+	
+	}
+	
+	@RequestMapping("/authenticateUser")
+	public ModelAndView validateUser(@ModelAttribute("user") User userObj) {
+		
+		ConfigurableApplicationContext context = new ClassPathXmlApplicationContext("com/SpringMVCQ4/bean.xml");
+		User userbean = (User) context.getBean("adminObj");
+		
+		//		String existingUser = "admin";
+		//		String adminPass = "root";
+
+		String uname = userObj.getUsername();
+		String pass = userObj.getPassword();
+		
+		ModelAndView mv = new ModelAndView();
+		
+		if(uname.equals(userbean.getUsername()) && pass.equals(userbean.getPassword())) {
+			 mv.setViewName("Success.jsp");
+		} else {
+			mv.setViewName("Error.jsp");
+		}
+		
+		context.close();
+		return mv;
+		
+	}
+}
+
+
+package com.SpringMVCQ4;
+
+public class User {
+	private String username;
+	private String password;
+	private String email;
+	
+	@Override
+	public String toString() {
+		return "User [username=" + username + ", password=" + password + ", email=" + email + "]";
+	}
+	
+	public User() {}
+	
+	public User(String username, String password, String email) {
+		super();
+		this.username = username;
+		this.password = password;
+		this.email = email;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public String getPassword() {
+		return password;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public void setPassword(String password) {
+		this.password = password;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+	
+}
+
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>${headerMessage}</h1>
+	<h1>Enter your Login Details:-</h1>
+	
+	<form action="/FirstSpringMVCProject/success.html" method="post">
+		<table>
+		<tr>
+		 <td>Email: <input type="text" name="email"/></td>
+		 </tr>
+		 <tr>
+		 <td>Name: <input type="text" name="name"/></td>
+		 </tr>
+		 <tr>
+		 <td>Password: <input type="password" name="password"/></td>
+		 </tr>
+		 <tr>
+		 <td>Contact: <input type="text" name="contact"/></td>
+		 </tr>
+		  <tr>
+		 <td>City :</td><td><select name="city" multiple>
+		 									<option value="Pune">Pune</option>
+		 									<option value="Bangalore">Bangalore</option>
+		 									<option value="Mumbai">Mumbai</option>
+		 </select></td>
+		 </tr>	
+		  <tr>
+		 <td>Zipcode: <input type="number" name="zipcode"/></td>
+		 </tr>
+				 
+		 <tr><td><input type="submit" value="Submit"/></td></tr>
+		 </table>
+	</form>
+
+</body>
+</html>
+
+
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h3>You Have Some Error!!</h3>
+	<form:errors path="data.*"/>
+
+
+</body>
+</html>
+
+<%@ page language="java" contentType="text/html; charset=ISO-8859-1"
+    pageEncoding="ISO-8859-1"%>
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+</head>
+<body>
+<h1>${headerMessage}</h1>
+		<h3>You have logged in Successfully!!</h3>
+		<h2>Details submitted by you::</h2>
+		<table>
+			<tr>
+				<td>Your Email :</td>
+				<td>${data.email}</td>
+			</tr>
+			<tr>
+				<td>Your Name :</td>
+				<td>${data.name}</td>
+			</tr>
+		
+		
+		</table>
+	</body>
+</html>
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:ctx="http://www.springframework.org/schema/context"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans-2.5.xsd
+	http://www.springframework.org/schema/mvc
+	http://www.springframework.org/schema/mvc/spring-mvc-3.0.xsd
+	http://www.springframework.org/schema/context
+	http://www.springframework.org/schema/context/spring-context-2.5.xsd ">
+	
+	
+	<ctx:annotation-config></ctx:annotation-config>
+	<ctx:component-scan base-package="com.SprinMVCQ4"></ctx:component-scan>
+</beans>
+
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee" xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd" id="WebApp_ID" version="4.0">
+  <display-name>Q7_MVC</display-name>
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.htm</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
+    <welcome-file>default.html</welcome-file>
+    <welcome-file>default.htm</welcome-file>
+    <welcome-file>default.jsp</welcome-file>
+  </welcome-file-list>
+  
+  <servlet>
+		<servlet-name>Aishwarya</servlet-name>
+		<servlet-class>
+			org.springframework.web.servlet.DispatcherServlet
+		</servlet-class>
+	</servlet>
+	<servlet-mapping>
+		<servlet-name>Aishwarya</servlet-name>
+		<url-pattern>/</url-pattern>
+	</servlet-mapping>
+
+</web-app>

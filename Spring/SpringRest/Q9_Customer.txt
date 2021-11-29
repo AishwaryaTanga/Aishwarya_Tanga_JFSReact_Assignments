@@ -1,0 +1,158 @@
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.priyanka.yadav.model.Customer;
+import com.priyanka.yadav.repository.CustomerRepository;
+
+@RestController
+@RequestMapping("/customer")
+public class CustomerController {
+
+	@Autowired
+	CustomerRepository cRepo;
+	
+	@PostMapping("/add")
+	public Customer addCustomer(@RequestBody Customer emp){
+		Customer e = cRepo.save(emp);
+		return e;
+	}
+	
+	@GetMapping("/find/{id}")
+	public Optional<Customer> searchCustomerById(@PathVariable("id") String id){
+		Optional<Customer> e = cRepo.findById(id);
+		return e;
+	}
+	
+	@DeleteMapping("/delete/{id}")
+	public String deleteCustomerById(@PathVariable("id") String id){
+		cRepo.deleteById(id);
+		return "Customer " + id + " deleted!";
+	}
+	
+	@GetMapping("/findall")
+	public List<Customer> findCustomers(){		
+		return (List<Customer>) cRepo.findAll();
+	}
+	
+	@PutMapping("/update")
+	public Customer updateCustomer(@RequestBody Customer emp){
+		Customer e = cRepo.save(emp);
+		return e;
+	}
+	
+}
+
+
+
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Document("Customer")
+public class Customer {
+	@Id
+	private String customerId;
+	private String customerName;
+	private String customerContactNo;
+	private String customerCity;
+	
+	@Override
+	public String toString() {
+		return "Customer [customerId=" + customerId + ", customerName=" + customerName + ", customerContactNo="
+				+ customerContactNo + ", customerCity=" + customerCity + "]";
+	}
+
+	public Customer(String customerName, String customerContactNo, String customerCity) {
+		super();
+		this.customerName = customerName;
+		this.customerContactNo = customerContactNo;
+		this.customerCity = customerCity;
+	}
+
+	public String getCustomerId() {
+		return customerId;
+	}
+
+	public String getCustomerName() {
+		return customerName;
+	}
+
+	public String getCustomerContactNo() {
+		return customerContactNo;
+	}
+
+	public String getCustomerCity() {
+		return customerCity;
+	}
+
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
+	}
+
+	public void setCustomerName(String customerName) {
+		this.customerName = customerName;
+	}
+
+	public void setCustomerContactNo(String customerContactNo) {
+		this.customerContactNo = customerContactNo;
+	}
+
+	public void setCustomerCity(String customerCity) {
+		this.customerCity = customerCity;
+	}
+	
+}
+
+
+
+package com.priyanka.yadav.repository;
+
+import org.springframework.data.repository.CrudRepository;
+
+import com.priyanka.yadav.model.Customer;
+
+public interface CustomerRepository extends CrudRepository<Customer, String> {
+	
+}
+
+
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class RestQ9CustomerApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(RestQ9CustomerApplication.class, args);
+	}
+
+}
+
+
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
+
+public class ServletInitializer extends SpringBootServletInitializer {
+
+	@Override
+	protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+		return application.sources(RestQ9CustomerApplication.class);
+	}
+
+}
+
+
+application properties:
+server.port=10005
+spring.data.mongodb.uri=mongodb+srv://Username:Password@samplecluster.2pkxf.mongodb.net/mySpringDatabase?retryWrites=true&w=majority
+spring.data.mongodb.database=DatabaseName

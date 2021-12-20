@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <title>Sum of n Numbers</title>
+    </head>
+
+<body>
+    <script>
+        var n = window.prompt("Enter any number");
+        result = mySum(n);
+        document.write("The sum of the numbers is " + result);
+        function mySum(n)
+        {
+            var sum = 0;
+            for(var i = 1; i<= n; i++)
+            {
+                sum = sum + i;
+            }
+                return (sum);
+        }
+      </script>
+</body>
+</html>

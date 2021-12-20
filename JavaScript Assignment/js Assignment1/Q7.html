@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Currency</title>
+</head>
+<body>
+    <script>
+        function fun(){
+        var x=document.getElementById("convert").value;
+        var y=document.getElementById("doller").value;
+        if(x==1){
+            var c=y*74.28;
+            alert(c);
+        }
+        else if(x==2){
+            var c=y*109.4;
+            alert(c);
+        }
+        else if(x==3){
+            var c=y*0.84;
+            alert(c);
+        }
+        else{
+            var c=y*.72;
+            alert(c);
+        }
+        }
+    </script>
+        <div id="select">
+        <select name="convert" id="convert" onchange="fun()">
+            <option value="1">IND(India)</option>
+            <option value="2">YEN(Japan)</option>
+            <option value="3">EURO(Euro)</option>
+            <option value="4">POUND(UK)</option>
+        </select>
+        <input type="number" placeholder="select" id="doller">
+        <button onclick="fun()">Click</button>
+        </div>
+</body>
+</html>
